@@ -1,0 +1,58 @@
+---
+import LogoMenu from "../LogoMenu.astro";
+import RightMenu from "../RightMenu.astro"
+import MainMenu from "../MainMenu.astro"
+import menuitems from '../../config/menu.json'; 
+// const menuitems = [
+//   {
+//     title: "Home",
+//     path: "/",
+//   },
+//   {
+//     title: "About",
+//     path: "/about",
+//   },
+//   {
+//     title: "Pricing",
+//     path: "/pricing",
+//   },
+//   {
+//     title: "Lowongan",
+//     path: "/lowongan",
+//   },
+//   {
+//     title: "Contact",
+//     path: "/contact",
+//   },
+//   {
+//     title: "Blog",
+//     path: "/blog",
+//   },
+  // {
+  //   title: "Pages",
+  //   path: "javascript:void(0)",
+  //   children: [
+  //     { title: "About Page", path: "/about" },
+  //     { title: "Pricing Page", path: "/pricing" },
+  //     { title: "Contact Page", path: "/contact" },
+  //     { title: "Blog Grid Page", path: "/blog" },
+  //     { title: "Sign Up Page", path: "/signup" },
+  //     { title: "Sign In Page", path: "/signin" },
+  //     { title: "404 Page", path: "/404" },
+  //   ],
+  // },
+//];
+const isHomePage = Astro.url.pathname === '/';
+---
+
+<header class="ud-header absolute top-0 left-0 z-40 flex w-full items-center bg-transparent">
+  <div class="max-w-[1240px] container mx-auto">
+    <div class="relative flex items-center justify-between">
+      <LogoMenu />
+      <div class="flex w-full items-center justify-between px-4">
+        <MainMenu menuitems={menuitems} homePage={isHomePage} />
+        <RightMenu homePage={isHomePage} />
+      </div>
+    </div>
+  </div>
+</header>

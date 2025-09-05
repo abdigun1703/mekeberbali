@@ -1,0 +1,153 @@
+---
+
+import Breadcrumb from '../../components/layout/Breadcrumb.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import PaginationBlog from '../../components/PaginationBlog.astro';
+
+// 1. Ambil query param ?p=…
+const url = new URL(Astro.request.url);
+const currentPage = parseInt(url.searchParams.get('p') || '1', 10);
+const perPage = 6;
+
+// 2. Ambil semua post yang sudah dipublish
+// let allPosts = await getCollection('blog', ({ data }) =>
+//   !data.draft && data.publishDate < new Date()
+// );
+let allPosts = await getCollection('blog', ({ data }) =>
+  !data.draft && new Date(data.publishDate) < new Date()
+);
+
+// 2. Konversi publishDate string ke Date object dan tambahkan timestamp
+// allPosts = allPosts.map(post => {
+//   const [datePart, timePart] = post.data.publishDate.split(' ');
+//   const [year, month, day] = datePart.split('-');
+//   const [hour, minute] = timePart.split(':');
+  
+//   const dateObj = new Date(year, month-1, day, hour, minute);
+  
+//   return {
+//     ...post,
+//     data: {
+//       ...post.data,
+//       publishDate: dateObj,
+//       // Tambahkan timestamp untuk sorting
+//       timestamp: dateObj.getTime()
+//     }
+//   };
+// });
+allPosts.sort((a, b) => {
+  const aTime = a.data.publishDate.getTime();
+  const bTime = b.data.publishDate.getTime();
+  return bTime - aTime;
+});
+
+// 3. Sortir berdasarkan timestamp (number)
+//allPosts.sort((a, b) => b.data.timestamp - a.data.timestamp);
+
+// 3. Sortir berdasarkan tanggal terbaru
+const featuredPosts = allPosts.filter(post => post.data.featured);
+const regularPosts = allPosts.filter(post => !post.data.featured);
+
+// 4. Sort by date (newest first)
+featuredPosts.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+
+//regularPosts.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+regularPosts.sort((a, b) => {
+  const aTime = a.data.publishDate.getTime();
+  const bTime = b.data.publishDate.getTime();
+  return bTime - aTime;
+});
+
+// 5. Calculate pagination for regular posts only
+const totalRegularPosts = regularPosts.length;
+const totalPages = Math.ceil(totalRegularPosts / perPage);
+
+// 6. Get posts for current page
+const start = (currentPage - 1) * perPage;
+const paginatedRegularPosts = regularPosts.slice(start, start + perPage);
+
+// 7. Combine featured posts with paginated regular posts
+// Show featured posts only on first page
+// const displayPosts = currentPage === 1 
+//   ? [...featuredPosts, ...paginatedRegularPosts] 
+//   : paginatedRegularPosts;
+
+const displayPosts = currentPage === 1 
+  ? [...featuredPosts, ...paginatedRegularPosts].slice(0, perPage)
+  : paginatedRegularPosts;
+
+  displayPosts.sort((a, b) => {
+  const aTime = a.data.publishDate.getTime();
+  const bTime = b.data.publishDate.getTime();
+  return bTime - aTime;
+});
+---
+
+<Layout
+  title="Blog | Play Astro"
+  description="Play Astro blog page with query-based pagination"
+>
+  <Breadcrumb>
+        <Fragment slot="title">Blog</Fragment>
+  </Breadcrumb>
+
+  <section class="pt-20 pb-10 lg:pt-[120px] lg:pb-20 dark:bg-dark">
+    <div class="max-w-[1240px] container mx-auto">
+    <!-- Featured Posts Section (only on page 1) -->
+    {currentPage === 1 && featuredPosts.length > 0 && (
+      <section class="mb-12">
+        <h2 class="mb-8 text-3xl font-bold text-gray-800 dark:text-white">
+          Featured Posts
+        </h2>
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {featuredPosts.map((post) => (
+            <BlogCard post={post} featured />
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Regular Posts Section -->
+    <section>
+      <h2 class="mb-8 text-3xl font-bold text-gray-800 dark:text-white">
+        {currentPage === 1 ? 'Latest Posts' : `Page ${currentPage}`}
+      </h2>
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {displayPosts.map((post) => (
+          <BlogCard post={post} />
+        ))}
+      </div>
+    </section>
+
+
+      <!-- pagination nav -->
+     <!-- Pagination -->
+      <PaginationBlog 
+        currentPage={currentPage} 
+        totalPages={totalPages}
+        baseUrl="/blog" 
+      />
+
+    </div>
+  </section>
+
+  <style is:global>
+    .pagination {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .pagination a {
+      padding: 0.25rem 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    .pagination a.active {
+      font-weight: bold;
+      background: #eee;
+    }
+  </style>
+</Layout>

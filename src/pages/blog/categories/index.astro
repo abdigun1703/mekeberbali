@@ -1,0 +1,54 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+// Ambil semua post blog
+const allPosts = await getCollection('blog');
+
+// Hitung jumlah post per kategori
+interface CategoryCounts {
+  [key: string]: number;
+}
+
+const categoryCounts: CategoryCounts = {};
+allPosts.forEach(post => {
+  if (post.data.categories) {
+    post.data.categories.forEach(category => {
+      const normalizedCategory = category.toLowerCase();
+      categoryCounts[normalizedCategory] = (categoryCounts[normalizedCategory] || 0) + 1;
+    });
+  }
+});
+
+// Konversi ke array untuk di-loop
+const categories = Object.entries(categoryCounts)
+  .map(([name, count]) => ({ name, count }))
+  .sort((a, b) => b.count - a.count);
+---
+
+<Layout 
+    title="Blog | Play Astro"
+  description="Play Astro blog page with query-based pagination"
+>
+  <section class="py-12">
+    <div class="container mx-auto px-4">
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-8">Blog Categories</h1>
+      
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {categories.map(({name, count}) => (
+          <a 
+            href={`/blog/categories/${name}`}
+            class="block p-6 rounded-lg bg-white dark:bg-dark-2 shadow hover:shadow-md transition-shadow"
+          >
+            <h2 class="text-xl font-bold capitalize text-gray-800 dark:text-white">
+              {name.replace('-', ' ')}
+            </h2>
+            <p class="mt-2 text-gray-600 dark:text-gray-400">
+              {count} {count === 1 ? 'post' : 'posts'}
+            </p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

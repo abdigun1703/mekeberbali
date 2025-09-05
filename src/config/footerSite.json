@@ -1,0 +1,33 @@
+[
+  {
+    "header": "About Us",
+    "links": [
+      { "name": "Home",         "href": "/",  "isExternal": false },
+      { "name": "Features",     "href": "/",  "isExternal": false },
+      { "name": "About",        "href": "/",  "isExternal": false },
+      { "name": "Testimonial",  "href": "/",  "isExternal": false }
+    ]
+  },
+  {
+    "header": "Features",
+    "links": [
+      { "name": "How it works",    "href": "/",  "isExternal": false },
+      { "name": "Privacy policy",  "href": "/",  "isExternal": false },
+      { "name": "Terms of Service","href": "/",  "isExternal": false },
+      { "name": "Refund policy",   "href": "/",  "isExternal": false }
+    ]
+  },
+  {
+    "header": "Our Products",
+    "links": [
+      { "name": "Lineicons",  "href": "https://lineicons.com/", "isExternal": true },
+      { "name": "TailAdmin",  "href": "https://tailadmin.com/", "isExternal": true },
+      { "name": "TailGrids",  "href": "https://tailgrids.com/", "isExternal": true },
+      { "name": "UIdeck",     "href": "https://uideck.com/",    "isExternal": true }
+    ]
+  },
+  {
+    "header": "Latest blog",
+    "links": []
+  }
+]

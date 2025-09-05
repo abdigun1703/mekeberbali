@@ -1,0 +1,131 @@
+---
+import { getCollection } from "astro:content";
+
+// Filter blog entries with 'draft: false' & date before current date
+// const publishedBlogEntries = await getCollection("blog", ({ data }) => {
+//   return !data.draft && data.publishDate < new Date();
+// });
+
+// Sort content entries by publication date
+// publishedBlogEntries.sort(function (a, b) {
+//   return b.data.publishDate.valueOf() - a.data.publishDate.valueOf();
+// });
+
+
+
+
+
+// Filter blog entries yang published
+// const publishedBlogEntries = await getCollection("blog", ({ data }) => {
+//   return !data.draft && new Date(data.publishDate) <= new Date();
+// });
+
+// Sort by date
+// publishedBlogEntries.sort((a, b) => 
+//   new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime()
+// );
+
+// Ambil current post slug dari props jika diperlukan
+//const { currentPostSlug } = Astro.props;
+const { currentPostSlug, currentPostCategories = [] } = Astro.props;
+//console.log('saat ini: ', currentPostCategories);
+// Ambil semua post yang published
+const publishedBlogEntries = await getCollection("blog", ({ data }) => {
+  return !data.draft && new Date(data.publishDate) <= new Date();
+});
+
+
+// Filter artikel terkait:
+// 1. Bukan post saat ini
+// 2. Memiliki minimal 1 kategori yang sama dengan post saat ini
+// 3. Diurutkan dari yang terbaru
+const relatedArticles = publishedBlogEntries
+  .filter(post => {
+    // Skip post saat ini
+    if (post.slug === currentPostSlug) return false;
+    
+    // Pastikan post memiliki kategori
+    if (!post.data.categories || !Array.isArray(post.data.categories)) return false;
+    
+    // Cari kesamaan kategori
+    return post.data.categories.some(cat => 
+      currentPostCategories.includes(cat)
+      
+    );
+    
+  })
+  .sort((a, b) => 
+    new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime()
+  )
+  .slice(0, 3); // Ambil 3 teratas
+  console.log('categories : ', currentPostCategories);
+---
+
+<div>
+  <div class="flex flex-wrap">
+    <div class="wow fadeInUp mt-14 w-full px-4" data-wow-delay=".2s">
+      <h2
+        class="relative pb-5 text-2xl font-semibold text-gray-800 sm:text-[36px]"
+      >
+        Related Articles
+      </h2>
+      <span class="mb-10 inline-block h-[2px] w-20 bg-primary"></span>
+    </div>
+  </div>
+
+{relatedArticles.length > 0 && (
+  <ul class="-mx-4 flex flex-wrap">
+    {publishedBlogEntries
+      .filter(blogPostEntry => {
+        // Skip current post jika ada props currentPostSlug
+        if (currentPostSlug && blogPostEntry.slug === currentPostSlug) {
+          return false;
+        }
+        
+        // Pastikan categories ada dan merupakan array
+        return Array.isArray(blogPostEntry.data.categories) && 
+               blogPostEntry.data.categories.length > 0;
+      })
+      .slice(0, 3) // Ambil 3 artikel terbaru
+      .map((blogPostEntry) => (
+        <li class="w-full px-4 md:w-1/2 lg:w-1/3">
+          <a class="wow fadeInUp group block mb-10" data-wow-delay=".1s" href={`/blog/${blogPostEntry.slug}`}>
+            <div class="mb-8 overflow-hidden rounded-[5px]">
+              <span class="block">
+                <img
+                  src={typeof blogPostEntry.data.image === 'string' 
+                    ? blogPostEntry.data.image 
+                    : blogPostEntry.data.image?.src}
+                  alt={typeof blogPostEntry.data.image === 'string' 
+                    ? blogPostEntry.data.title 
+                    : blogPostEntry.data.image?.alt || blogPostEntry.data.title}
+                  class="w-full ease-in duration-300 group-hover:rotate-6 group-hover:scale-125"
+                  loading="lazy"
+                />
+              </span>
+            </div>
+            <div>
+              <span class="inline-block px-4 py-0.5 mb-6 text-xs font-medium leading-loose text-center text-slate-500 rounded-[5px] bg-slate-100">
+                {new Date(blogPostEntry.data.publishDate).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </span>
+              <h3>
+                <span class="inline-block mb-4 text-xl font-semibold text-gray-500 dark:text-gray-500 hover:text-primary sm:text-2xl lg:text-xl xl:text-2xl">
+                  {blogPostEntry.data.title}
+                </span>
+              </h3>
+              <p class="max-w-[370px] text-base text-gray-500">
+                {
+                 blogPostEntry.data.snippet || 
+                 ''}
+              </p>
+            </div>
+          </a>
+        </li>
+      ))}
+  </ul>
+  )}
+</div>

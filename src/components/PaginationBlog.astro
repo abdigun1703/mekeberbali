@@ -1,0 +1,117 @@
+---
+
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  baseUrl?: string;
+}
+
+const { currentPage, totalPages, baseUrl = "/blog" } = Astro.props;
+---
+
+<!-- Pagination Component -->
+{totalPages > 1 && (
+  <div class="text-center mt-8 wow fadeInUp" data-wow-delay=".2s">
+    <div class="inline-flex p-3 bg-white dark:bg-dark-2 border rounded-[10px] border-stroke dark:border-dark-3">
+      <ul class="flex items-center">
+        <!-- Previous Button -->
+        <li class="px-1">
+          {currentPage > 1 ? (
+            <a
+              href={`${baseUrl}?p=${currentPage - 1}`}
+              class="flex items-center justify-center text-base bg-transparent border rounded-md hover:border-primary hover:bg-primary h-[34px] w-[34px] border-stroke dark:border-dark-3 text-gray-800 hover:text-white dark:hover:border-primary dark:hover:text-white"
+            >
+              ‹
+            </a>
+          ) : (
+            <span class="flex items-center justify-center h-[34px] w-[34px] opacity-30">
+              ‹
+            </span>
+          )}
+        </li>
+
+        <!-- First Page -->
+        <li class="px-1">
+          <a
+            href={`${baseUrl}?p=1`}
+            class={`flex items-center justify-center text-base border rounded-md hover:border-primary hover:bg-primary h-[34px] w-[34px] border-stroke dark:border-dark-3 ${
+              1 === currentPage
+                ? 'bg-primary text-white'
+                : 'text-body-color dark:text-dark-6 hover:text-white dark:hover:border-primary dark:hover:text-white'
+            }`}
+          >
+            1
+          </a>
+        </li>
+
+        <!-- Left Ellipsis -->
+        {currentPage > 3 && (
+          <li class="px-1">
+            <span class="flex items-center justify-center h-[34px] w-[34px]">
+              ...
+            </span>
+          </li>
+        )}
+
+        <!-- Middle Pages - SOLUSI FIXED DISINI -->
+        {Array.from({ length: totalPages }, (_, i) => i + 1)
+          .filter(i => i > 1 && i < totalPages && i >= currentPage - 1 && i <= currentPage + 1)
+          .map(i => (
+            <li class="px-1">
+              <a
+                href={`${baseUrl}?p=${i}`}
+                class={`flex items-center justify-center text-base border rounded-md hover:border-primary hover:bg-primary h-[34px] w-[34px] border-stroke dark:border-dark-3 ${
+                  i === currentPage
+                    ? 'bg-primary text-white'
+                    : 'text-body-color dark:text-dark-6 hover:text-white dark:hover:border-primary dark:hover:text-white'
+                }`}
+              >
+                {i}
+              </a>
+            </li>
+          ))}
+
+        <!-- Right Ellipsis -->
+        {currentPage < totalPages - 2 && (
+          <li class="px-1">
+            <span class="flex items-center justify-center h-[34px] w-[34px]">
+              ...
+            </span>
+          </li>
+        )}
+
+        <!-- Last Page (if more than one page) -->
+        {totalPages > 1 && (
+          <li class="px-1">
+            <a
+              href={`${baseUrl}?p=${totalPages}`}
+              class={`flex items-center justify-center text-base border rounded-md hover:border-primary hover:bg-primary h-[34px] w-[34px] border-stroke dark:border-dark-3 ${
+                totalPages === currentPage
+                  ? 'bg-primary text-white'
+                  : 'text-body-color dark:text-dark-6 hover:text-white dark:hover:border-primary dark:hover:text-white'
+              }`}
+            >
+              {totalPages}
+            </a>
+          </li>
+        )}
+
+        <!-- Next Button -->
+        <li class="px-1">
+          {currentPage < totalPages ? (
+            <a
+              href={`${baseUrl}?p=${currentPage + 1}`}
+              class="flex items-center justify-center text-base bg-transparent border rounded-md hover:border-primary hover:bg-primary h-[34px] w-[34px] border-stroke dark:border-dark-3 text-body-color dark:text-dark-6 hover:text-white dark:hover:border-primary dark:hover:text-white"
+            >
+              ›
+            </a>
+          ) : (
+            <span class="flex items-center justify-center h-[34px] w-[34px] opacity-30">
+              ›
+            </span>
+          )}
+        </li>
+      </ul>
+    </div>
+  </div>
+)}

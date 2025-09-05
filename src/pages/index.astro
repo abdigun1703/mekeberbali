@@ -1,0 +1,31 @@
+---
+import config from '../config/mainConfig.json';
+const siteName = config.homepage.title || "Mekeber Bali"; 
+
+const pageTitle = `Situs mencari kerja, bisnis, klinik di Bali | ${siteName}`;
+import About from '../components/Aboutsection.astro';
+import Features from '../components/Features.astro';
+import Hero from '../components/Hero.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Layout from '../layouts/Layout.astro';
+import Pricing from '../components/Pricingsection.astro';
+import Faq from '../components/Faq.astro';
+import Clients from '../components/Clients.astro';
+import Team from '../components/Team.astro';
+import Contact from '../components/Contactsection.astro';
+import CTA from '../components/CTAsection.astro';
+import Blogsection from '../components/Blogsection.astro';
+import MyHero from '../components/MyHero.astro';
+import GoBlog from '../components/GoBlog.astro'
+import CallSales from '../components/CallSales.astro'
+import GeBlog from '../components/GeBlog.astro';
+import GetInsight from '../components/GetInsight.astro'
+---
+
+<Layout
+  title={pageTitle}
+>
+  <Hero />
+
+  <MyHero />
+</Layout>

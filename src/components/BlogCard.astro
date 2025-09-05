@@ -1,0 +1,117 @@
+---
+
+// interface Props {
+//   post: any;
+//   featured?: boolean;
+//   getPost: string;
+// }
+
+
+// const { post, getPost, featured = false } = Astro.props;
+// const { data } = post;
+
+
+// const categories = [...new Set(post.flatMap(getPost => getPost.data.categories || []))];
+
+interface Props {
+  post: {
+    data: {
+      title: string;
+      description?: string;  // Made optional to match both snippet and description
+      snippet?: string;     // Added this to match your collection
+      publishDate: Date;
+      categories?: string[];
+      featured?: boolean;
+      image?: string | { src: string; alt: string }; // Updated to handle both string and object
+      author?: string;
+      authorImg?: {
+        src: string;
+        alt: string;
+      };
+      draft?: boolean;       // Added to match collection
+    };
+    slug: string;
+  };
+  featured?: boolean;
+}
+
+const { post, featured = false } = Astro.props;
+// Use snippet if description doesn't exist
+const description = post.data.description || post.data.snippet || '';
+const image = typeof post.data.image === 'string' ? post.data.image : post.data.image?.src;
+const { title, publishDate, categories = [], author, authorImg } = post.data;
+const formattedDate = new Date(publishDate).toLocaleDateString('id-ID', {
+  day: 'numeric',   // tanggal
+  month: 'long',    // bulan dalam teks (Agustus)
+  year: 'numeric'   // tahun
+});
+---
+
+
+<article class={`wow fadeInUp group relative overflow-hidden rounded-[10px] bg-white shadow-two duration-300 hover:shadow-one dark:bg-dark-2 dark:shadow-three dark:hover:shadow-gray-dark ${featured ? 'border-2 border-primary' : ''}`}>
+  {featured && (
+    <div class="absolute right-4 top-4 z-10 rounded-full bg-primary px-3 py-1 text-xs font-medium text-white">
+      Featured
+    </div>
+  )}
+  {image && (
+    <div class="relative block h-[220px] w-full overflow-hidden">
+      <img
+        src={image}
+        alt={title}
+        class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+        loading="lazy"
+      />
+    </div>
+  )}
+  <div class="p-6 sm:p-8 md:px-6 md:py-8 lg:p-8 xl:px-5 xl:py-8 2xl:p-8">
+    <div class="mb-5 flex flex-col sm:flex-row sm:items-center gap-3">
+      {categories.length > 0 && (
+        <div class="flex flex-wrap gap-2">
+          {categories.map(category => (
+            <a 
+              href={`/blog/categories/${category.toLowerCase().replace(/\s+/g, '-')}`}
+              class="text-xs font-medium px-2 py-1 rounded bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200"
+            >
+              {category}
+            </a>
+          ))}
+        </div>
+      )}
+      {categories.length > 0 && (
+        <span class="hidden sm:inline-block h-5 w-px bg-body-color dark:bg-dark-3"></span>
+      )}
+      <time datetime={publishDate.toISOString()} class="text-sm text-gray-500 dark:text-gray-400">
+        {formattedDate}
+      </time>
+    </div>
+    <h3>
+      <a
+        href={`/blog/${post.slug}`}
+        class="mb-4 block text-xl font-bold text-dark hover:text-primary dark:text-white dark:hover:text-primary sm:text-2xl"
+      >
+        {title}
+      </a>
+    </h3>
+    <p class="mb-6 text-base text-body-color dark:text-dark-6">
+      {description}
+    </p>
+    {author && authorImg && (
+      <div class="flex items-center">
+        <div class="mr-5 flex items-center">
+          <div class="mr-4 h-10 w-10 overflow-hidden rounded-full">
+            <img
+              src={authorImg.src}
+              alt={authorImg.alt}
+              class="w-full"
+              loading="lazy"
+            />
+          </div>
+          <div class="text-sm font-medium text-dark dark:text-white">
+            By <span class="text-primary">{author}</span>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</article>

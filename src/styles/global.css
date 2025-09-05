@@ -1,0 +1,202 @@
+/*
+  The CSS in this style tag is based off of Bear Blog's default CSS.
+  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
+  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
+ */
+
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+
+:root {
+	scroll-behavior: smooth;
+	--accent: #2337ff;
+	--accent-dark: #000d8a;
+	--black: 15, 18, 25;
+	--gray: 96, 115, 159;
+	--gray-light: 229, 233, 240;
+	--gray-dark: 34, 41, 57;
+	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
+	--box-shadow:
+		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
+		0 16px 32px rgba(var(--gray), 33%);
+}
+@font-face {
+	font-family: 'Atkinson';
+	src: url('/fonts/atkinson-regular.woff') format('woff');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Atkinson';
+	src: url('/fonts/atkinson-bold.woff') format('woff');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+/* Smooth scrolling */
+
+/* Atau */
+html {
+  scroll-behavior: smooth;
+}
+
+
+
+body {
+	        font-family: "Inter", sans-serif;
+	margin: 0;
+	padding: 0;
+	background: linear-gradient(var(--gray-gradient)) no-repeat;
+}
+
+/* Optional: Style untuk link aktif di TOC */
+.toc a.active {
+  color: var(--toc-link-active);
+  font-weight: bold;
+}
+
+	  :target::before {
+  content: '';
+  display: block;
+  height: 6rem; /* Sesuaikan dengan tinggi header */
+  margin-top: -6rem; /* Nilai negatif yang sama */
+  visibility: hidden;
+}
+
+.primary {
+	color: #3758F9;
+}
+.blue-dark{
+	color: #1B44C8;
+}
+.secondary{
+	color: #13C296;
+}
+
+
+strong,
+b {
+	font-weight: 700;
+}
+
+table {
+	width: 100%;
+}
+
+code {
+	padding: 2px 5px;
+	background-color: rgb(var(--gray-light));
+	border-radius: 2px;
+}
+pre {
+	padding: 1.5em;
+	border-radius: 8px;
+}
+pre > code {
+	all: unset;
+}
+blockquote {
+	border-left: 4px solid var(--accent);
+	padding: 0 0 0 20px;
+	margin: 0px;
+	font-size: 1.333em;
+}
+hr {
+	border: none;
+	border-top: 1px solid rgb(var(--gray-light));
+}
+@media (max-width: 720px) {
+	body {
+		
+	}
+	main {
+
+	}
+}
+
+.sr-only {
+	border: 0;
+	padding: 0;
+	margin: 0;
+	position: absolute !important;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	/* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
+	clip: rect(1px 1px 1px 1px);
+	/* maybe deprecated but we need to support legacy browsers */
+	clip: rect(1px, 1px, 1px, 1px);
+	/* modern browsers, clip-path works inwards from each corner */
+	clip-path: inset(50%);
+	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
+	white-space: nowrap;
+}
+
+      .sticky-header {
+        @apply fixed z-[9999] bg-white dark:bg-black transition;
+        backdrop-filter: blur(5px);
+        box-shadow: inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
+      }
+
+      .sticky-header .navbar-logo {
+        @apply py-2;
+      }
+
+      .sticky-header #navbarToggler span {
+        @apply bg-gray-800 dark:bg-white;
+      }
+
+      .sticky-header #navbarCollapse li > a {
+        @apply text-gray-800 dark:text-white hover:text-slate-200 dark:hover:text-slate-200 hover:opacity-100;
+      }
+      #navbarCollapse li .ud-menu-scroll.active {
+        @apply opacity-70;
+      }
+      .sticky-header #navbarCollapse li .ud-menu-scroll.active {
+        @apply text-slate-200 opacity-100;
+      }
+      .sticky-header .loginBtn {
+        @apply text-gray-800 dark:text-white hover:text-slate-200 dark:hover:text-slate-200 hover:opacity-100;
+      }
+
+      .sticky-header .signUpBtn {
+        @apply bg-emerald-400 text-white hover:bg-blue-500 hover:text-white;
+      }
+
+      .sticky-header #themeSwitcher span {
+        @apply text-gray-800 dark:text-white;
+      }
+
+      .navbarTogglerActive > span:nth-child(1) {
+        @apply top-[7px] rotate-45 transform;
+      }
+      .navbarTogglerActive > span:nth-child(2) {
+        @apply opacity-0;
+      }
+      .navbarTogglerActive > span:nth-child(3) {
+        @apply top-[-8px] rotate-[135deg];
+      }
+
+      .common-carousel .swiper-button-next:after,
+      .common-carousel .swiper-button-prev:after {
+        @apply hidden;
+      }
+
+      .common-carousel .swiper-button-next,
+      .common-carousel .swiper-button-prev {
+        @apply !static h-12 w-12 rounded-lg bg-white dark:bg-gray-800 shadow-xl text-gray-800 dark:text-white m-0 ease-out duration-200 hover:bg-slate-200 hover:text-white hover:shadow-none;
+      }
+
+      .common-carousel .swiper-button-next svg,
+      .common-carousel .swiper-button-prev svg {
+        @apply w-auto h-auto;
+      }
+	  
+	  /* custom bg gradient */
+	  .bg-client {
+		background-image: linear-gradient(45deg, #2af598 0%, #009efd 100%);
+	  }
+

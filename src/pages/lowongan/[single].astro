@@ -1,0 +1,97 @@
+---
+export const prerender = true;
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import BannerAds from '../../components/BannerAds.astro';
+
+export async function getStaticPaths() {
+  const all = await getCollection('jobs');
+  return all.map((e) => ({
+    params: { single: e.slug },
+  }));
+}
+
+const { single } = Astro.params;
+const allEntries = await getCollection('jobs');
+const entry = allEntries.find((e) => e.slug === single);
+
+if (!entry) {
+  throw new Error(`Post with slug "${single}" not found`);
+}
+
+const { Content } = await entry.render();
+//console.log("kategori untuk post ini: ", entry.data.categories);
+const allUniqueCategories = new Set<string>();
+
+// Iterate over all entries and add their categories to the Set
+allEntries.forEach(jobEntry => {
+  if (jobEntry.data.categories && Array.isArray(jobEntry.data.categories)) {
+    jobEntry.data.categories.forEach((category: string) => {
+      allUniqueCategories.add(category);
+    });
+  }
+});
+
+// Convert the Set back to an array if needed
+const categoriesArray = Array.from(allUniqueCategories);
+function createSlug(text: string): string {
+  return text
+    .toLowerCase() // Ubah semua huruf jadi kecil
+    .replace(/\s+/g, '-') // Ganti spasi dengan hyphen (-)
+    .replace(/[^\w-]+/g, '') // Hapus semua karakter non-alfanumerik kecuali hyphen
+    .replace(/--+/g, '-') // Ganti multiple hyphens dengan single hyphen
+    .replace(/^-+|-+$/g, ''); // Hapus hyphen di awal atau akhir string
+}
+
+console.log("Semua kategori unik yang ada:", categoriesArray);
+---
+<Layout 
+  title=`${entry.data.title} | Mekeber` 
+  description={entry.data.excerpt} 
+  >
+  <div class="bg-emerald-400 relative z-10 overflow-hidden pt-[120px] pb-[60px] md:pt-[130px] lg:pt-[120px]">
+    <div class="max-w-[1240px] mx-auto mt-20 mb-10 ">
+          <h1 class="px-4 py-3 text-center text-5xl text-white font-bold">{entry.data.title}</h1>
+          <p class="px-4 py-3 text-center text-white">
+            <a href="/">Home</a> / <a href="/lowongan">Lowongan</a>
+          </p>
+    </div>
+  </div>
+  
+  <section class="pt-20 pb-10 lg:pt-20 lg:pb-20 dark:bg-dark">
+    <div class="max-w-[1240px] container mx-auto">
+      <div class="flex flex-wrap justify-center">
+        <div class="w-full px-4">
+            
+            <div class="flex flex-wrap justify-between">
+            <div class="w-full px-4 lg:w-7/12">
+              <Content />
+            </div>
+            <div class="w-full px-4 lg:w-4/12">
+              <h3 class="mb-3">Semua Kategori:</h3>
+              <ul class="category-list mb-5"> 
+                {categoriesArray.map((category) => (
+                  <li>
+                    <a href={`/lowongan/categories/${ createSlug(category) }`} class="bg-emerald-400 px-6 py-1 rounded-xl text-[#333] no-underline whitespace-nowrap hover:bg-[#e0e0e0] text-xs">{ category }</a>
+                  </li>
+                ))}
+              </ul>
+              <BannerAds />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<style>
+  .category-list {
+    list-style: none; /* Menghilangkan bullet point */
+    padding: 0; /* Menghilangkan padding default ul */
+    display: flex; /* Ini kuncinya! Membuat item sejajar */
+    gap: 10px; /* Memberi jarak antar item */
+    flex-wrap: wrap; /* Jika banyak item, biar bisa pindah baris */
+  }
+
+</style>
+</Layout>

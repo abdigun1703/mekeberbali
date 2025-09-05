@@ -1,0 +1,179 @@
+---
+export const prerender = true;
+import { getCollection } from "astro:content";
+import Newsletterbox from '../../components/Newsletterbox.astro';
+import PopularArticles from '../../components/PopularArticles.astro';
+import Layout from "../../layouts/Layout.astro";
+import RelatedArticles from "../../components/RelatedArticles.astro";
+import BreadBlog from "../../components/BreadBlog.astro";
+import Breadcrumb from "../../components/layout/Breadcrumb.astro";
+import TableOfContents from '../../components/TableOfContensts.astro'; // Impor komponen TableOfContents
+import TOC from '../../components/TOC.astro';
+import BannerImageTop from '../../components/BannerImageTop.astro';
+import ArticleContent from '../../components/ArticleContent.astro';
+import BannerAds from '../../components/BannerAds.astro';
+
+// Generate a new path for every collection entry
+// export async function getStaticPaths() {
+//   const blogEntries = await getCollection("blog");
+//   return blogEntries.map((entry) => ({
+//     params: { single: entry.slug },
+//     props: { entry },
+//   }));
+// }
+
+// Get the entry directly from the prop on render
+// const { entry } = Astro.props;
+// const { Content } = await entry.render();
+
+export async function getStaticPaths() {
+  const all = await getCollection('blog');
+  return all.map((e) => ({
+    params: { single: e.slug },
+  }));
+}
+
+// 2. Ambil slug & cari entry
+const { single } = Astro.params;
+const allEntries = await getCollection('blog');
+const entry = allEntries.find((e) => e.slug === single);
+
+if (!entry) {
+  throw new Error(`Post with slug "${single}" not found`);
+}
+
+// Perubahan di sini: Menggunakan 'as any'
+const headings = (entry.data as any).headings || []; 
+
+// 3. Render MDX content
+const { Content } = await entry.render();
+console.log('Headings yang terdeteksi:', headings); // Tambahkan ini
+console.log('snippet nya ', entry.data.snippet); 
+---
+
+<Layout 
+  title=`${entry.data.title} | Mekeber` 
+  description={entry.data.snippet} 
+  image={entry.data.bigImg.src}
+  >
+  <!-- ====== Blog Details Section Start -->
+
+  <section class="pt-20 pb-10 lg:pt-20 lg:pb-20 dark:bg-dark md:mt-[120px]">
+    <div class="max-w-[1240px] container mx-auto">
+      <div class="flex flex-wrap justify-center">
+        <div class="w-full px-4">
+          <BannerImageTop
+            bigImg={entry.data.bigImg}
+            authorImg={entry.data.authorImg}
+            author={entry.data.author}
+            publishDate={entry.data.publishDate}
+            comments={entry.data.comments}
+            views={entry.data.views}
+          />
+          <h1
+            class="wow fadeInUp px-4 md:mb-8 text-2xl font-bold text-gray-900 sm:text-3xl md:text-[35px] md:leading-[1.28]"
+            data-wow-delay=".1s"
+          >
+            {entry.data.title}
+          </h1>
+          <div class="flex flex-wrap justify-between content-main">
+            <div class="w-full px-4 lg:w-7/12">
+              <TOC content={entry.body}  />
+              <ArticleContent
+                postDetails={entry.data.postDetails || {}}
+                quotes={entry.data.quotes}
+                tags={entry.data.tags}
+                content={Content}
+              />
+            </div>
+            <div class="w-full px-4 lg:w-4/12">
+              <div>
+                <Newsletterbox />
+                <PopularArticles />
+                <BannerAds />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <RelatedArticles 
+        currentPostSlug={entry.slug} 
+        currentPostCategories={entry.data.categories || []}   
+      />
+    </div>
+  </section>
+  <!-- ====== Blog Details Section End -->
+
+  <style is:global>
+    .content-main h3{
+      margin-bottom: 1.2rem;
+      font-size: 32px;
+      line-height: 1.3;
+    }
+
+/* Styling untuk paragraf di konten */
+.content-main p {
+  margin-bottom: .95rem;
+}
+
+/* Styling untuk judul di daftar isi (TOC) */
+.table-of-contents h3 {
+  margin-left: 0.3rem;
+}
+
+/* --- Styling Khusus untuk Daftar --- */
+/* Ini untuk daftar BERURUTAN (numbered list) */
+/* Pastikan penomoran default tidak dihilangkan dan tampil sebagai angka */
+.content-main ol {
+  list-style-type: decimal; /* Ini memastikan penomoran angka (1, 2, 3, ...) muncul */
+  padding-left: 25px; /* Memberi ruang untuk angka penomoran */
+  margin-top: 15px;
+  margin-bottom: 15px;
+  /* Atur padding-left ini sesuai keinginan Anda agar angka tidak terlalu mepet ke kiri */
+}
+
+/* Styling untuk setiap item dalam daftar bernomor utama (OL > LI) */
+.content-main ol > li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* --- Styling untuk Sub-list (UL di dalam OL) --- */
+
+/* Ini untuk daftar TIDAK BERURUTAN (bullet points) yang muncul sebagai sub-list */
+/* Pastikan ini hanya menargetkan UL yang berada di dalam LI dari OL */
+.content-main ol li ul {
+  list-style: none; /* Ini menghilangkan bullet point default dari sub-list */
+  padding: 0; /* Hapus padding default UL */
+  margin-top: 5px; /* Jarak dari item OL di atasnya */
+  margin-bottom: 5px;
+  margin-left: -5px; /* Sesuaikan ini untuk meratakan ikon dengan teks OL */
+}
+
+/* Ini untuk setiap item dalam sub-list (UL LI) */
+.content-main ol li ul li {
+  position: relative;
+  padding-left: 25px; /* Memberi ruang untuk ikon centang */
+  margin-bottom: 8px; /* Jarak antar item sub-list */
+  line-height: 1.5;
+  color: #555; /* Warna teks sub-list mungkin sedikit berbeda */
+}
+
+/* Ini adalah ikon centang untuk item di sub-list */
+.content-main ol li ul li::before {
+  content: '';
+  position: absolute;
+  left: 0; /* Pastikan posisi left 0 agar ikon pas */
+  top: 6px; /* Sesuaikan posisi vertikal ikon agar rata dengan teks */
+  width: 14px; /* Sedikit lebih kecil untuk sub-list */
+  height: 14px;
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%232e8b57"%3E%3Cpath d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/%3E%3C/svg%3E');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+  </style>
+
+</Layout>

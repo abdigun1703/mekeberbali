@@ -1,0 +1,55 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumb from '../../components/layout/Breadcrumb.astro';
+import JobCard from '../../components/JobCard.astro';
+import { getCollection } from 'astro:content';
+
+const url = new URL(Astro.request.url);
+const currentPage = parseInt(url.searchParams.get('p') || '1', 10);
+const perPage = 6;
+
+let allJobs = await getCollection('jobs', ({ data }) =>
+  !data.draft && new Date(data.publishDate) < new Date()
+);
+
+allJobs.sort((a, b) => {
+  const aTime = a.data.publishDate.getTime();
+  const bTime = b.data.publishDate.getTime();
+  return bTime - aTime;
+});
+
+//console.log("semua job: ", allJobs);
+---
+
+<Layout
+  description="Play Astro is a free and open-source Astro template, built for SaaS, startup, business and software website. Play crafted in a way that you can use with almost all sort of web project."
+  title="Lowongan | Play Astro"
+>
+ 	<Breadcrumb>
+    	<Fragment slot="title">Lowongan Bali 2025</Fragment>
+	</Breadcrumb>
+	
+	<section class="pt-8 pb-10 lg:pt-10 lg:pb-20">
+		<div class="max-w-[1240px] container mx-auto">
+				<h2 class="mb-8 text-3xl font-bold text-gray-800 dark:text-white">
+					{currentPage === 1 ? 'Lowongan Terbaru' : `Page ${currentPage}`}
+				</h2>
+				<div class="grid gap-10 md:grid-cols-2">
+					{allJobs.map((post) => (
+						<JobCard post={post} />
+						))}
+				</div>
+			
+			<p class="mt-20">
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+				labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo
+				viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam
+				adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus
+				et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus
+				vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque
+				sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
+			</p>
+
+		</div>
+	</section>
+</Layout>

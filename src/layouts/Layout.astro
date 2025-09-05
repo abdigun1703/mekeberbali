@@ -1,0 +1,78 @@
+---
+import Footer from '../components/layout/Footer.astro';
+import Header from '../components/layout/Header.astro';
+import BackToTop from '../components/layout/BackToTop.astro';
+import MadeWithButton from '../components/layout/MadeWithButton.astro';
+import { ClientRouter } from "astro:transitions";
+import "../styles/global.css";
+import type { string } from 'astro:schema';
+import config from '../config/mainConfig.json';
+const siteName = config.homepage.title || "Mekeber Bali"; 
+const siteDescription = config.homepage.description; 
+const pageDescription = `${siteDescription} | ${siteName}`;
+
+interface Props {
+  description?: string;
+  title?: string;
+  image?: string;
+  canonical?: string;
+}
+
+const { description, title = 'Mekeber Bali', image, canonical } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+
+      <!-- Favicons -->
+      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+      <link rel="manifest" href="/site.webmanifest" />
+      
+      <!-- PWA Settings -->
+      <meta name="theme-color" content="#ffffff" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- Canonical -->
+      <link 
+        rel="canonical" 
+        href={canonical || Astro.url.href} 
+        item-prop="url" 
+      />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description  || pageDescription} />
+    <meta property="og:image" content={image} />
+    <meta property="twitter:image" content={image} />
+    <meta 
+    name="twitter:image:alt" 
+    content={title || 'Thumbnail situs Mekeber'} 
+  />
+    <title>{title}</title>
+  </head>
+  <body>
+    <Header />
+    <!-- <Header client:load /> -->
+    <main>
+      <ClientRouter />
+      <slot />
+    </main>
+    <Footer />
+    <BackToTop />
+    <style is:global>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+    </style>
+    <script>
+      import "../scripts/stickymenu.js";
+      import "../scripts/dropdown.js";
+
+      import "../scripts/scrolltop.js";
+      import "../scripts/scrollmenu.js";
+      import "../scripts/testimonial.js";
+    </script>
+  </body>
+</html>

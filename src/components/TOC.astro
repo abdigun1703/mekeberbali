@@ -1,0 +1,83 @@
+---
+// src/components/TOC.astro
+import { Fragment } from 'astro/jsx-runtime';
+
+interface Props {
+  content: string;
+}
+
+const { content } = Astro.props;
+
+// Ekstrak heading dari konten
+const headings = content.match(/^#+\s.+$/gm) || [];
+
+// Filter hanya h2 dan h3 (sesuaikan kebutuhan)
+const filteredHeadings = headings.filter(heading => 
+  heading.startsWith('## ') || heading.startsWith('### ')
+);
+
+// Fungsi untuk membuat slug/id dari teks heading
+const createSlug = (text: string) => {
+  return text
+    .replace(/^#+\s/, '')
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+};
+---
+
+
+<nav class="table-of-contents">
+  <h3>Daftar Isi</h3>
+  <ul>
+    {filteredHeadings.map((heading) => {
+      const level = heading.match(/^#+/)?.[0].length || 2;
+      const text = heading.replace(/^#+\s/, '');
+      const slug = createSlug(heading);
+      
+      return (
+        <li style={`margin-left: ${(level - 2) * 0.5}rem`}>
+          <a href={`#${slug}`} data-slug={slug}>{text}</a>
+        </li>
+      );
+    })}
+  </ul>
+</nav>
+
+<style>
+    .table-of-contents {
+    border: 1px solid #ccc;
+    padding: 1em;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin: 15px 0;
+  }
+
+  .table-of-contents h3 {
+    margin-top: 0;
+    color: #333;
+  }
+
+  .table-of-contents ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .table-of-contents li {
+    margin-bottom: 0.5em;
+  }
+
+  .table-of-contents a {
+    text-decoration: none;
+    text-transform: capitalize;
+    color: #007bff;
+    display: block; /* Agar paddingLeft bekerja dengan baik */
+    transition: color 0.2s ease-in-out;
+  }
+
+  .table-of-contents a:hover {
+    color: #0056b3;
+  }
+</style>

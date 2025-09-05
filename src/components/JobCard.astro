@@ -1,0 +1,43 @@
+---
+interface Props {
+  post: {
+    data: {
+      title: string;
+      description?: string;  // Made optional to match both snippet and description
+      snippet?: string;     // Added this to match your collection
+      publishDate: Date;
+      categories?: string[];
+      image?: string | { src: string; alt: string }; // Updated to handle both string and object
+      draft?: boolean;       // Added to match collection
+      excerpt?: string;
+    };
+    slug: string;
+  };
+  featured?: boolean;
+}
+
+const { post } = Astro.props;
+// Use snippet if description doesn't exist
+const description = post.data.excerpt || '';
+const image = typeof post.data.image === 'string' ? post.data.image : post.data.image?.src;
+const { title, publishDate, categories = [] } = post.data;
+const formattedDate = new Date(publishDate).toLocaleDateString('id-ID', {
+  day: 'numeric',   // tanggal
+  month: 'long',    // bulan dalam teks (Agustus)
+  year: 'numeric'   // tahun
+});
+---
+<article class="wow fadeInUp group relative overflow-hidden rounded-[10px] bg-white shadow-two duration-300 hover:shadow-one dark:bg-dark-2 dark:shadow-three dark:hover:shadow-gray-dark">
+    <div class="p-6 sm:p-8 md:px-6 md:py-8 lg:p-8 xl:px-5 xl:py-8 2xl:p-8">
+        <div class="mb-5 flex flex-col sm:flex-row sm:items-center gap-3">
+        <h3>
+            <a
+                href={`/lowongan/${post.slug}`}
+                class="mb-4 block text-xl font-bold text-dark hover:text-primary dark:text-white dark:hover:text-primary sm:text-2xl"
+            >
+                {title}
+            </a>
+            </h3>
+        </div>
+    </div>
+</article>
