@@ -8,6 +8,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 :root {
 	scroll-behavior: smooth;
@@ -52,13 +53,26 @@ body {
 	background: linear-gradient(var(--gray-gradient)) no-repeat;
 }
 
+
+.astro-route-announcer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+  width: 1px;
+  height: 1px;
+}
+
 /* Optional: Style untuk link aktif di TOC */
 .toc a.active {
   color: var(--toc-link-active);
   font-weight: bold;
 }
 
-	  :target::before {
+:target::before {
   content: '';
   display: block;
   height: 6rem; /* Sesuaikan dengan tinggi header */

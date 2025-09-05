@@ -48,9 +48,14 @@ export default defineConfig({
   output: 'server',
 
   vite: {
- plugins: [
-   tailwindcss(),
- ],
+//  plugins: [
+//    tailwindcss(),
+//  ],
+css: {
+
+      postcss: './postcss.config.js'
+    }
+
 },
 
   outDir: 'build',
