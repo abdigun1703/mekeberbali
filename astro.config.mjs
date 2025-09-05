@@ -45,14 +45,13 @@ export default defineConfig({
     react()
 
   ],
-  output: 'static',
+  
 
   vite: {
 //  plugins: [
 //    tailwindcss(),
 //  ],
 css: {
-
       postcss: './postcss.config.js'
     }
 
