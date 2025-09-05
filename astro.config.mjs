@@ -45,7 +45,7 @@ export default defineConfig({
     react()
 
   ],
-  output: 'server',
+  output: 'static',
 
   vite: {
 //  plugins: [
